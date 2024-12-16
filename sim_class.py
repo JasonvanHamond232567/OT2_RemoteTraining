@@ -24,11 +24,11 @@ class Simulation:
         p.setGravity(0,0,-10)
         #p.setPhysicsEngineParameter(contactBreakingThreshold=0.000001)
         # load a texture
-        texture_list = os.listdir("datalab_tasks/task9/textures")
+        texture_list = os.listdir("textures")
         random_texture = random.choice(texture_list[:-1])
         random_texture_index = texture_list.index(random_texture)
-        self.plate_image_path = f'datalab_tasks/task9/textures/_plates/{os.listdir("datalab_tasks/task9/textures/_plates")[random_texture_index]}'
-        self.textureId = p.loadTexture(f'datalab_tasks/task9/textures/{random_texture}')
+        self.plate_image_path = f'textures/_plates/{os.listdir("textures/_plates")[random_texture_index]}'
+        self.textureId = p.loadTexture(f'textures/{random_texture}')
         #print(f'textureId: {self.textureId}')
 
         # Set the camera parameters
@@ -87,7 +87,7 @@ class Simulation:
                 if agent_count < num_agents:  # Check if more agents need to be placed
                     # Calculate position for each robot
                     position = [-spacing * i, -spacing * j, 0.03]
-                    robotId = p.loadURDF("datalab_tasks/task9/ot_2_simulation_v6.urdf", position, [0,0,0,1],
+                    robotId = p.loadURDF("ot_2_simulation_v6.urdf", position, [0,0,0,1],
                                         flags=p.URDF_USE_INERTIA_FROM_FILE)
                     start_position, start_orientation = p.getBasePositionAndOrientation(robotId)
                     p.createConstraint(parentBodyUniqueId=robotId,
@@ -107,7 +107,7 @@ class Simulation:
                     offset = [0.18275-0.00005, 0.163-0.026, 0.057]
                     position_with_offset = [position[0] + offset[0], position[1] + offset[1], position[2] + offset[2]]
                     rotate_90 = p.getQuaternionFromEuler([0, 0, -math.pi/2])
-                    planeId = p.loadURDF("datalab_tasks/task9/custom.urdf", position_with_offset, rotate_90)#start_orientation)
+                    planeId = p.loadURDF("custom.urdf", position_with_offset, rotate_90)#start_orientation)
                     # Disable collision between the robot and the specimen
                     p.setCollisionFilterPair(robotId, planeId, -1, -1, enableCollision=0)
                     spec_position, spec_orientation = p.getBasePositionAndOrientation(planeId)
