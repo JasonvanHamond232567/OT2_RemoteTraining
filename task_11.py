@@ -13,11 +13,17 @@ import gymnasium as gym
 import argparse
 from clearml import Task
 import wandb
+import typing_extensions as TypeIs
+import tensorflow
+import os
 
-#Define the model
-env = OT2Env()
+# Load the API key for wandb
+os.environ['WANDB_API_KEY'] = 'b5568f289e67777846d0dd9aa888f0d1701b32c1'
+# Initiate the remote task.
 task = Task.init(project_name="Mentor Group K/Group 1/JasonvanHamond",
                     task_name='Experiment1')
+
+
 
 #copy these lines exactly as they are
 #setting the base docker image
@@ -25,6 +31,8 @@ task.set_base_docker('deanis/2023y2b-rl:latest')
 #setting the task to run remotely on the default queue
 task.execute_remotely(queue_name="default")
 
+#Define the model
+env = OT2Env()
 
 # Ensure compatibility
 run = wandb.init(project="local_task11",sync_tensorboard=True)
