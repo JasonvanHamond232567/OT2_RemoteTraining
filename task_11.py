@@ -7,6 +7,7 @@
 # Import packages
 from wandb.integration.sb3 import WandbCallback
 from stable_baselines3 import PPO
+from stable_baselines3.common.callbacks import EvalCallback, CallbackList
 from stable_baselines3.common.env_checker import check_env
 from ot2_gym_wrapper import OT2Env
 import gymnasium as gym
@@ -25,20 +26,19 @@ task = Task.init(project_name="Mentor Group K/Group 1/JasonvanHamond",
 
 
 
-#copy these lines exactly as they are
-#setting the base docker image
+# Setting docker image
 task.set_base_docker('deanis/2023y2b-rl:latest')
-#setting the task to run remotely on the default queue
+# Setting task to run remotely
 task.execute_remotely(queue_name="default")
 
 #Define the model
 env = OT2Env()
 
-# Ensure compatibility
-run = wandb.init(project="local_task11",sync_tensorboard=True)
+# Initialate wandb
+run = wandb.init(project="task11",sync_tensorboard=True)
 
 # Set the amount of epochs for the model to learn
-timesteps = 1000
+timesteps = 10000
 # Define the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--learning_rate", type=float, default=0.0003)
@@ -53,14 +53,25 @@ model = PPO("MlpPolicy", env, verbose=1,
             batch_size=args.batch_size, 
             n_steps=args.n_steps, 
             n_epochs=args.n_epochs,)
-# Callback
-wandb_callback = WandbCallback(model_save_freq=1000,
-                                model_save_path=f"models/{run.id}",
-                                verbose=2,)
+# Set callbacks
+eval_callback = EvalCallback(
+    eval_env,
+    best_model_save_path="./logs/",
+    log_path="./logs/",
+    eval_freq=1000,
+    deterministic=True,
+    render=False,
+)
+wandb_callback = WandbCallback(
+    model_save_freq=1000,
+    model_save_path=f"models/{run.id}",
+    verbose=2,)
+# Add the callbacks into a list
+callbacks = CallbackList([eval_callback, wandb_callback])
+
 timesteps = 1000
 for i in range(10):
-    # add the reset_num_timesteps=False argument to the learn function to prevent the model from resetting the timestep counter
-    # add the tb_log_name argument to the learn function to log the tensorboard data to the correct folder
-    model.learn(total_timesteps=timesteps, callback=wandb_callback, progress_bar=True, reset_num_timesteps=False,tb_log_name=f"runs/{run.id}")
-    # save the model to the models folder with the run id and the current timestep
+    # Train the model
+    model.learn(total_timesteps=timesteps, callback=callbacks, progress_bar=True, reset_num_timesteps=False,tb_log_name=f"runs/{run.id}")
+    # Save the model.
     model.save(f"models/{run.id}/{timesteps*(i+1)}")
