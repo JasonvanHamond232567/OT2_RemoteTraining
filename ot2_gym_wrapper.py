@@ -59,8 +59,6 @@ class OT2Env(gym.Env):
         observation = np.array(self.sim.get_pipette_position(self.sim.robotIds[0]), dtype=np.float32)
         # Calculate the agent's reward
         reward = -np.linalg.norm(pipette_position - self.goal_position)
-        # Print reward for debugging in model training
-        print(f"Reward: {reward}")
         # Check if the agent reaches within the threshold of the goal position
         if np.linalg.norm(pipette_position - self.goal_position) <= 0.1:
             terminated = True
