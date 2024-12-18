@@ -56,8 +56,8 @@ model = PPO("MlpPolicy", env, verbose=1,
 # Set callbacks
 eval_callback = EvalCallback(
     OT2Env(),
-    best_model_save_path="./logs/",
-    log_path="./logs/",
+    best_model_save_path="logs",
+    log_path="logs",
     eval_freq=1000,
     deterministic=True,
     render=False,
