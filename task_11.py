@@ -38,10 +38,10 @@ env = OT2Env()
 run = wandb.init(project="task11",sync_tensorboard=True)
 
 # Set the amount of epochs for the model to learn
-timesteps = 10000
+timesteps = 100000
 # Define the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("--learning_rate", type=float, default=0.0003)
+parser.add_argument("--learning_rate", type=float, default=0.0001)
 parser.add_argument("--batch_size", type=int, default=64)
 parser.add_argument("--n_steps", type=int, default=2048)
 parser.add_argument("--n_epochs", type=int, default=10)
@@ -52,26 +52,16 @@ model = PPO("MlpPolicy", env, verbose=1,
             learning_rate=args.learning_rate, 
             batch_size=args.batch_size, 
             n_steps=args.n_steps, 
-            n_epochs=args.n_epochs,)
-# Set callbacks
-eval_callback = EvalCallback(
-    OT2Env(),
-    best_model_save_path="logs",
-    log_path="logs",
-    eval_freq=1000,
-    deterministic=True,
-    render=False,
-)
+            n_epochs=args.n_epochs,
+            tensorboard_log=f"runs/{run.id}")
+
 wandb_callback = WandbCallback(
     model_save_freq=1000,
     model_save_path=f"models/{run.id}",
     verbose=2,)
-# Add the callbacks into a list
-callbacks = CallbackList([eval_callback, wandb_callback])
 
-timesteps = 1000
 for i in range(10):
     # Train the model
-    model.learn(total_timesteps=timesteps, callback=callbacks, progress_bar=True, reset_num_timesteps=False,tb_log_name=f"runs/{run.id}")
+    model.learn(total_timesteps=timesteps, callback=wandb_callback, progress_bar=True, reset_num_timesteps=False,tb_log_name=f"runs/{run.id}")
     # Save the model.
     model.save(f"models/{run.id}/{timesteps*(i+1)}")
