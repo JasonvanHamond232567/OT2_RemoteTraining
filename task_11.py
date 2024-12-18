@@ -37,7 +37,7 @@ env = OT2Env()
 run = wandb.init(project="task11",sync_tensorboard=True)
 
 # Set the amount of epochs for the model to learn
-timesteps = 1000000
+timesteps = 6000000
 # Define the arguments
 parser = argparse.ArgumentParser()
 # Set the default parameters.
@@ -63,7 +63,7 @@ model = PPO(args.policy, env, verbose=1,
             tensorboard_log=f"runs/{run.id}")
 
 wandb_callback = WandbCallback(
-    model_save_freq=1000,
+    model_save_freq=100000,
     model_save_path=f"models/{run.id}",
     verbose=2,)
 
