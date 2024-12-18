@@ -57,28 +57,9 @@ class OT2Env(gym.Env):
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])
         # Process observation
         observation = np.array(self.sim.get_pipette_position(self.sim.robotIds[0]), dtype=np.float32)
-        # Calculate distance to goal
-        distance_to_goal = np.linalg.norm(pipette_position - self.goal_position)
-        distance_reward = self.previous_distance - distance_to_goal if hasattr(self, 'previous_distance') else 0
-        self.previous_distance = distance_to_goal
-        # Reward function
-        reward = 0
-        # 1. Positive reward for reducing the distance to the goal
-        reward += 2 * distance_reward  # Multiply for more noticeable impact 
-        # 2. Bonus for being very close to the goal
-        if distance_to_goal < 0.05:
-            reward += 20  # Large positive reward for reaching the goal
-            terminated = True
-        else:
-            terminated = False
-        # 3. Small constant reward for making progress each step
-        reward += 1.0  # Encourages movement toward the goal
-        # 4. Penalize large or unnecessary actions
-        action_magnitude = np.linalg.norm(action)
-        reward -= 0.05 * action_magnitude  # Penalize large movements, reduced weight
-        # 5. Add a small time penalty to encourage faster completion
-        reward -= 0.01  # Small penalty per step
-        # Check termination condition
+        # Calculate the agent's reward
+        reward = -np.linalg.norm(pipette_position - self.goal_position)
+        
         # Check if the agent reaches within the threshold of the goal position
         if np.linalg.norm(pipette_position - self.goal_position) <= 0.1:
             terminated = True
