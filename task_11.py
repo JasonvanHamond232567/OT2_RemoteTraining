@@ -22,8 +22,7 @@ import os
 os.environ['WANDB_API_KEY'] = 'b5568f289e67777846d0dd9aa888f0d1701b32c1'
 # Initiate the remote task.
 task = Task.init(project_name="Mentor Group K/Group 1/JasonvanHamond",
-                    task_name='Experiment1')
-
+                    task_name="JasonvanHamond_baseline")
 
 
 # Setting docker image
@@ -38,21 +37,29 @@ env = OT2Env()
 run = wandb.init(project="task11",sync_tensorboard=True)
 
 # Set the amount of epochs for the model to learn
-timesteps = 100000
+timesteps = 5000000
 # Define the arguments
 parser = argparse.ArgumentParser()
+# Set the default parameters.
 parser.add_argument("--learning_rate", type=float, default=0.0001)
-parser.add_argument("--batch_size", type=int, default=64)
+parser.add_argument("--batch_size", type=int, default=32)
 parser.add_argument("--n_steps", type=int, default=2048)
 parser.add_argument("--n_epochs", type=int, default=10)
+parser.add_argument("--gamma", type=float, default=0.98)
+parser.add_argument("--policy", type=str, default="MlpPolicy")
+parser.add_argument("--clip_range", type=float, default=0.2)
+parser.add_argument("--value_coefficient", type=float, default=0.5)
 args = parser.parse_args()
 
 # Create the PPO Model based on the wrapper.
-model = PPO("MlpPolicy", env, verbose=1, 
+model = PPO(args.policy, env, verbose=1,
             learning_rate=args.learning_rate, 
             batch_size=args.batch_size, 
             n_steps=args.n_steps, 
             n_epochs=args.n_epochs,
+            gamma=args.gamma,
+            clip_range=args.clip_range,
+            vf_coef=args.value_coefficient,
             tensorboard_log=f"runs/{run.id}")
 
 wandb_callback = WandbCallback(
