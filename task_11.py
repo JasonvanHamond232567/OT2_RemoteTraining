@@ -9,7 +9,7 @@ from wandb.integration.sb3 import WandbCallback
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import EvalCallback, CallbackList
 from stable_baselines3.common.env_checker import check_env
-from ot2_gym_wrapper import OT2Env
+from ot2_gym_wrapper_baseline import OT2Env
 import gymnasium as gym
 import argparse
 from clearml import Task
