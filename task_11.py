@@ -37,7 +37,7 @@ env = OT2Env()
 run = wandb.init(project="task11",sync_tensorboard=True)
 
 # Set the amount of epochs for the model to learn
-timesteps = 5000000
+timesteps = 1000000
 # Define the arguments
 parser = argparse.ArgumentParser()
 # Set the default parameters.
