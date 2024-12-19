@@ -72,6 +72,7 @@ wandb_callback = WandbCallback(
 # Train the model
 model.learn(total_timesteps=timesteps, callback=wandb_callback, progress_bar=True, reset_num_timesteps=False,tb_log_name=f"runs/{run.id}")
 # Save the model.
-model.save(f"models/{run.id}/{timesteps}")
+model.save(f"models/{run.id}/{timesteps}_baseline")
+wandb.save(f"models/{run.id}/{timesteps}_baseline")
 # Add another one for just in case
 task.upload_artifact(name="final_model", artifact_object=f"models/{run.id}/{timesteps}")

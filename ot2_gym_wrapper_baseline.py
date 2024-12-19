@@ -61,7 +61,7 @@ class OT2Env(gym.Env):
         reward = -np.linalg.norm(pipette_position - self.goal_position)
         
         # Check if the agent reaches within the threshold of the goal position
-        if np.linalg.norm(pipette_position - self.goal_position) <= 0.1:
+        if np.linalg.norm(pipette_position - self.goal_position) <= 0.0001:
             terminated = True
         else:
             terminated = False
