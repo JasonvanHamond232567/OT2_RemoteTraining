@@ -48,7 +48,7 @@ class OT2Env(gym.Env):
         observation = np.concatenate(
             (
                 self.sim.get_pipette_position(self.sim.robotIds[0]), 
-                self.goal_position - self.sim.get_pipette_position(self.sim.robotIds[0])
+                self.goal_position
             ), axis=0
         ).astype(np.float32) 
 
@@ -61,14 +61,10 @@ class OT2Env(gym.Env):
 
     def step(self, action):
         # set the actions
-        scaled_action = np.array([
-            self.x_min + (action[0] + 1.0) / 2.0 * (self.x_max - self.x_min),
-            self.y_min + (action[1] + 1.0) / 2.0 * (self.y_max - self.y_min),
-            self.z_min + (action[2] + 1.0) / 2.0 * (self.z_max - self.z_min)
-        ], dtype=np.float32)
+        action = np.append(np.array(action, dtype=np.float32), 0)
 
         # Call the step function in the simulation
-        self.sim.run([np.append(scaled_action, 0)])
+        self.sim.run([np.append(action, 0)])
         # Get the current pipette position
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])
         # Calculate how far away the goal is 
@@ -102,7 +98,7 @@ class OT2Env(gym.Env):
         else:
             truncated = False
         # Set the observation.
-        observation = np.concatenate((pipette_position, self.goal_position - pipette_position), axis=0).astype(np.float32) 
+        observation = np.concatenate((pipette_position, self.goal_position), axis=0).astype(np.float32) 
         info = {}
 
 
