@@ -58,8 +58,7 @@ class OT2Env(gym.Env):
 
     def step(self, action):
         # set the actions
-        action = np.clip(action, [self.x_min, self.y_min, self.z_min], [self.x_max, self.y_max, self.z_max])
-        action = np.append(np.array(action, dtype=np.float32), 0)
+        action = np.array(np.clip(action, [self.x_min, self.y_min, self.z_min], [self.x_max, self.y_max, self.z_max]))
         # Call the step function
         observation = self.sim.run([action])
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])

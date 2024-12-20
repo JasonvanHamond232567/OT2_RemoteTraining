@@ -19,13 +19,24 @@ import tensorflow
 import os
 
 # Load the API key for wandb
-os.environ['WANDB_API_KEY'] = 'b5568f289e67777846d0dd9aa888f0d1701b32c1'
+# os.environ['WANDB_API_KEY'] = 'b5568f289e67777846d0dd9aa888f0d1701b32c1'
+# # Initiate the remote task.
+# task = Task.init(project_name="Mentor Group K/Group 1/JasonvanHamond",
+#                     task_name="JasonvanHamond_baseline")
+
+
+# # Setting docker image
+# task.set_base_docker('deanis/2023y2b-rl:latest')
+# # Setting task to run remotely
+# task.execute_remotely(queue_name="default")
 
 #Define the model
 env = OT2Env()
 
 # Initialate wandb
 run = wandb.init(project="task11",sync_tensorboard=True)
+save_path = f"models/{run.id}"
+os.makedirs(save_path, exist_ok=True)
 
 # Set the amount of epochs for the model to learn
 timesteps = 5000000
@@ -41,10 +52,6 @@ parser.add_argument("--policy", type=str, default="MlpPolicy")
 parser.add_argument("--clip_range", type=float, default=0.2)
 parser.add_argument("--value_coefficient", type=float, default=0.5)
 args = parser.parse_args()
-
-# Ensure that the folders exists before running
-os.makedirs(f"models/{run.id}", exist_ok=True)
-os.makedirs(f"runs/{run.id}", exist_ok=True)
 
 # Create the PPO Model based on the wrapper.
 model = PPO(args.policy, env, verbose=1,
@@ -65,4 +72,5 @@ wandb_callback = WandbCallback(
 # Train the model
 model.learn(total_timesteps=timesteps, callback=wandb_callback, progress_bar=True, reset_num_timesteps=False,tb_log_name=f"runs/{run.id}")
 # Save the model.
-model.save(f"models/{run.id}/{timesteps}")
+model.save(f"models/{run.id}/{timesteps}_baseline")
+wandb.save(f"models/{run.id}/{timesteps}_baseline")
