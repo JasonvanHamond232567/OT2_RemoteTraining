@@ -85,12 +85,6 @@ class OT2Env(gym.Env):
         else:
             terminated = False
             reward -= 0.1
-            
-        # Check for stagnation after 10 steps to avoid exploitation.
-        if np.abs(self.prev_distance - goal_distance) < 0.001:
-                reward -= 5
-        # Set a proximity reward to ensure better outcomes.
-        reward += max(0, 10 - goal_distance * 1000) * 0.5  
 
         # Check if episode should be truncated
         if self.steps >= self.max_steps:
