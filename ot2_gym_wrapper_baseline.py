@@ -19,12 +19,16 @@ class OT2Env(gym.Env):
         self.y_min, self.y_max = -0.1705, 0.2195
         self.z_min, self.z_max = 0.1195, 0.2895
         # Define action and observation spaces
-        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(3,), dtype=np.float32)
+        self.action_space = spaces.Box(
+            low=np.array([self.x_min, self.y_min, self.z_min]),
+            high=np.array([self.x_max, self.y_max, self.z_max]),
+            shape=(3,), dtype=np.float32
+        )
         self.observation_space = spaces.Box(
             low=np.array([self.x_min, self.y_min, self.z_min]),
             high=np.array([self.x_max, self.y_max, self.z_max]),
-            shape=(3,), dtype=np.float32)
-
+            shape=(3,), dtype=np.float32
+        )
 
         # Keep track of the step amount
         self.steps = 0
@@ -54,24 +58,27 @@ class OT2Env(gym.Env):
 
     def step(self, action):
         # set the actions
+        action = np.clip(action, [self.x_min, self.y_min, self.z_min], [self.x_max, self.y_max, self.z_max])
         action = np.append(np.array(action, dtype=np.float32), 0)
         # Call the step function
         observation = self.sim.run([action])
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])
         # Process observation
-        observation = np.array(self.sim.get_pipette_position(self.sim.robotIds[0]), dtype=np.float32)
+        observation = np.array(pipette_position, dtype=np.float32)
         # Calculate the agent's reward
-        reward = -np.linalg.norm(pipette_position - self.goal_position)
+        reward = -np.linalg.norm(np.array(pipette_position) - np.array(self.goal_position))
         
         # Check if the agent reaches within the threshold of the goal position
         if np.linalg.norm(pipette_position - self.goal_position) <= 0.001:
             terminated = True
+            info = {"episode": {"reward": reward}}
         else:
             terminated = False
 
         # Check if episode should be truncated
-        if self.steps > self.max_steps:
+        if self.steps >= self.max_steps:
             truncated = True
+            info = {"episode": {"reward": reward}}
         else:
             truncated = False
 
