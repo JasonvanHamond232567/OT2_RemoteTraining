@@ -66,6 +66,8 @@ class OT2Env(gym.Env):
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])
         # Calculate how far away the goal is 
         goal_distance = np.linalg.norm(pipette_position - self.goal_position)
+        # Process observation
+        observation = np.array(pipette_position, dtype=np.float32)
         # Initialise reward
         reward = 0
         # Check if previous_distance has been set yet or not
