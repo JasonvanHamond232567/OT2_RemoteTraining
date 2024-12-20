@@ -14,14 +14,17 @@ class OT2Env(gym.Env):
         # Create the simulation environment
         self.sim = Simulation(num_agents=1, render=self.render)
 
-        # Define action and observation spaces
-        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(3,), dtype=np.float32)
-        self.observation_space = spaces.Box(low=0, high=1, shape=(3,), dtype=np.float32)
-
         # Set the maximum values according to the working environment.
         self.x_min, self.x_max = -0.187, 0.2531
         self.y_min, self.y_max = -0.1705, 0.2195
         self.z_min, self.z_max = 0.1195, 0.2895
+        # Define action and observation spaces
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(3,), dtype=np.float32)
+        self.observation_space = spaces.Box(
+            low=np.array([self.x_min, self.y_min, self.z_min]),
+            high=np.array([self.x_max, self.y_max, self.z_max]),
+            shape=(3,), dtype=np.float32)
+
 
         # Keep track of the step amount
         self.steps = 0
@@ -61,7 +64,7 @@ class OT2Env(gym.Env):
         reward = -np.linalg.norm(pipette_position - self.goal_position)
         
         # Check if the agent reaches within the threshold of the goal position
-        if np.linalg.norm(pipette_position - self.goal_position) <= 0.0001:
+        if np.linalg.norm(pipette_position - self.goal_position) <= 0.001:
             terminated = True
         else:
             terminated = False
