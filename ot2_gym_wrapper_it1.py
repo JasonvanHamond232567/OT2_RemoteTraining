@@ -1,3 +1,5 @@
+# Changes: 
+# - New reward function
 # Import required packages
 import gymnasium as gym
 from gymnasium import spaces
@@ -62,17 +64,25 @@ class OT2Env(gym.Env):
         # Call the step function
         observation = self.sim.run([action])
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])
-        # Process observation
-        observation = np.array(pipette_position, dtype=np.float32)
-        # Calculate the agent's reward
-        reward = -np.linalg.norm(np.array(pipette_position) - np.array(self.goal_position))
+        # Calculate how far away the goal is 
+        goal_distance = np.linalg.norm(pipette_position - self.goal_position)
+        # Initialise reward
+        reward = 0
+        # Check if previous_distance has been set yet or not
+        if hasattr(self, "prev_distance"):
+            # Reward the agent on their progress towards the goal
+            reward += self.prev_distance - goal_distance
+        self.prev_distance = goal_distance
         
         # Check if the agent reaches within the threshold of the goal position
         if np.linalg.norm(pipette_position - self.goal_position) <= 0.001:
+            # Reward agent for reaching the goal.
+            reward += 100
             terminated = True
             info = {"episode": {"reward": reward}}
         else:
             terminated = False
+        reward -= 0.1
 
         # Check if episode should be truncated
         if self.steps >= self.max_steps:
