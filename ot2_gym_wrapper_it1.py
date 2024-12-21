@@ -76,10 +76,6 @@ class OT2Env(gym.Env):
             # Reward agent for reaching the goal.
             reward += 100
             terminated = True
-        else:
-            # Give a penalty for taking longer
-            terminated = False
-            reward -= 0.1
 
         # Check if episode should be truncated
         if self.steps >= self.max_steps:
