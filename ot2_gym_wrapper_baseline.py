@@ -19,15 +19,11 @@ class OT2Env(gym.Env):
         self.y_min, self.y_max = -0.1705, 0.2195
         self.z_min, self.z_max = 0.1195, 0.2895
         # Define action and observation spaces
-        self.action_space = spaces.Box(
-            low=np.array([self.x_min, self.y_min, self.z_min]),
-            high=np.array([self.x_max, self.y_max, self.z_max]),
-            shape=(3,), dtype=np.float32
-        )
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(3,), dtype=np.float32)
         self.observation_space = spaces.Box(
-            low=np.array([self.x_min, self.y_min, self.z_min]),
-            high=np.array([self.x_max, self.y_max, self.z_max]),
-            shape=(3,), dtype=np.float32
+            low=np.array([self.x_min, self.y_min, self.z_min, -self.x_max, -self.y_max, -self.z_max], dtype=np.float32),
+            high=np.array([self.x_max, self.y_max, self.z_max, self.x_max, self.y_max, self.z_max], dtype=np.float32),
+            dtype=np.float32
         )
 
         # Keep track of the step amount
@@ -46,13 +42,18 @@ class OT2Env(gym.Env):
         self.goal_position = np.array([x, y, z])
         # Call reset function
         observation = self.sim.reset(num_agents=1)
-        # Process observation
-        observation = np.array(self.sim.get_pipette_position(self.sim.robotIds[0]), dtype=np.float32)
+        # Set the observation.
+        observation = np.concatenate(
+            (
+                self.sim.get_pipette_position(self.sim.robotIds[0]), 
+                self.goal_position
+            ), axis=0
+        ).astype(np.float32) 
 
         # Reset the number of steps
         self.steps = 0
 
-        info = {"goal_position": self.goal_position.tolist(),}
+        info = {}
 
         return observation, info
 
@@ -65,22 +66,21 @@ class OT2Env(gym.Env):
         # Process observation
         observation = np.array(pipette_position, dtype=np.float32)
         # Calculate the agent's reward
-        reward = -np.linalg.norm(np.array(pipette_position) - np.array(self.goal_position))
+        distance = np.linalg.norm(np.array(pipette_position) - np.array(self.goal_position))
+        reward = -distance
         
         # Check if the agent reaches within the threshold of the goal position
         if np.linalg.norm(pipette_position - self.goal_position) <= 0.001:
             terminated = True
-            info = {"episode": {"reward": reward}}
         else:
             terminated = False
 
         # Check if episode should be truncated
         if self.steps >= self.max_steps:
             truncated = True
-            info = {"episode": {"reward": reward}}
         else:
             truncated = False
-
+        observation = np.concatenate((pipette_position, self.goal_position), axis=0).astype(np.float32)
         info = {}
 
         # Update the amount of steps
