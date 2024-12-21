@@ -14,14 +14,17 @@ class OT2Env(gym.Env):
         # Create the simulation environment
         self.sim = Simulation(num_agents=1, render=self.render)
 
-        # Define action and observation spaces
-        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(3,), dtype=np.float32)
-        self.observation_space = spaces.Box(low=0, high=1, shape=(3,), dtype=np.float32)
-
         # Set the maximum values according to the working environment.
         self.x_min, self.x_max = -0.187, 0.2531
         self.y_min, self.y_max = -0.1705, 0.2195
         self.z_min, self.z_max = 0.1195, 0.2895
+        # Define action and observation spaces
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(3,), dtype=np.float32)
+        self.observation_space = spaces.Box(
+            low=np.array([self.x_min, self.y_min, self.z_min, -self.x_max, -self.y_max, -self.z_max], dtype=np.float32),
+            high=np.array([self.x_max, self.y_max, self.z_max, self.x_max, self.y_max, self.z_max], dtype=np.float32),
+            dtype=np.float32
+        )
 
         # Keep track of the step amount
         self.steps = 0
@@ -39,13 +42,18 @@ class OT2Env(gym.Env):
         self.goal_position = np.array([x, y, z])
         # Call reset function
         observation = self.sim.reset(num_agents=1)
-        # Process observation
-        observation = np.array(self.sim.get_pipette_position(self.sim.robotIds[0]), dtype=np.float32)
+        # Set the observation.
+        observation = np.concatenate(
+            (
+                self.sim.get_pipette_position(self.sim.robotIds[0]), 
+                self.goal_position
+            ), axis=0
+        ).astype(np.float32) 
 
         # Reset the number of steps
         self.steps = 0
 
-        info = {"goal_position": self.goal_position.tolist(),}
+        info = {}
 
         return observation, info
 
@@ -56,41 +64,23 @@ class OT2Env(gym.Env):
         observation = self.sim.run([action])
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])
         # Process observation
-        observation = np.array(self.sim.get_pipette_position(self.sim.robotIds[0]), dtype=np.float32)
-        # Calculate distance to goal
-        distance_to_goal = np.linalg.norm(pipette_position - self.goal_position)
-        distance_reward = self.previous_distance - distance_to_goal if hasattr(self, 'previous_distance') else 0
-        self.previous_distance = distance_to_goal
-        # Reward function
-        reward = 0
-        # 1. Positive reward for reducing the distance to the goal
-        reward += 2 * distance_reward  # Multiply for more noticeable impact 
-        # 2. Bonus for being very close to the goal
-        if distance_to_goal < 0.05:
-            reward += 20  # Large positive reward for reaching the goal
-            terminated = True
-        else:
-            terminated = False
-        # 3. Small constant reward for making progress each step
-        reward += 1.0  # Encourages movement toward the goal
-        # 4. Penalize large or unnecessary actions
-        action_magnitude = np.linalg.norm(action)
-        reward -= 0.05 * action_magnitude  # Penalize large movements, reduced weight
-        # 5. Add a small time penalty to encourage faster completion
-        reward -= 0.01  # Small penalty per step
-        # Check termination condition
+        observation = np.array(pipette_position, dtype=np.float32)
+        # Calculate the agent's reward
+        distance = np.linalg.norm(np.array(pipette_position) - np.array(self.goal_position))
+        reward = -distance
+        
         # Check if the agent reaches within the threshold of the goal position
-        if np.linalg.norm(pipette_position - self.goal_position) <= 0.1:
+        if np.linalg.norm(pipette_position - self.goal_position) <= 0.001:
             terminated = True
         else:
             terminated = False
 
         # Check if episode should be truncated
-        if self.steps > self.max_steps:
+        if self.steps >= self.max_steps:
             truncated = True
         else:
             truncated = False
-
+        observation = np.concatenate((pipette_position, self.goal_position), axis=0).astype(np.float32)
         info = {}
 
         # Update the amount of steps

@@ -63,8 +63,6 @@ class OT2Env(gym.Env):
         # Call the step function
         observation = self.sim.run([action])
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])
-        # Process observation
-        observation = np.array(pipette_position, dtype=np.float32)
         # Calculate the agent's reward
         distance = np.linalg.norm(np.array(pipette_position) - np.array(self.goal_position))
         reward = -distance

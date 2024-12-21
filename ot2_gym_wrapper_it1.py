@@ -67,15 +67,9 @@ class OT2Env(gym.Env):
         self.sim.run([np.append(action, 0)])
         # Get the current pipette position
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])
-        # Calculate how far away the goal is 
-        goal_distance = np.linalg.norm(pipette_position - self.goal_position)
         # Initialise reward
-        reward = 0
-        # Check if previous_distance has been set yet or not
-        if hasattr(self, "prev_distance"):
-            # Reward the agent on their progress towards the goal
-            reward += (self.prev_distance - goal_distance) * 10
-        self.prev_distance = goal_distance
+        distance = np.linalg.norm(np.array(pipette_position) - np.array(self.goal_position))
+        reward = -distance
 
         # Check if the agent reaches within the threshold of the goal position
         if np.linalg.norm(pipette_position - self.goal_position) <= 0.001:
@@ -83,6 +77,7 @@ class OT2Env(gym.Env):
             reward += 100
             terminated = True
         else:
+            # Give a penalty for taking longer
             terminated = False
             reward -= 0.1
 
