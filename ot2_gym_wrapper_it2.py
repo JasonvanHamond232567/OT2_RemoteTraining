@@ -66,9 +66,10 @@ class OT2Env(gym.Env):
         #Calculate the distance between the agent and goal
         distance = np.linalg.norm(pipette_position - self.goal_position)
         # Get the previous distance, set infinite if it doens't exist.
-        previous_distance = getattr(self, "previous_distance", np.inf)
+        if not hasattr(self, "previous_distance"):
+            self.previous_distance = distance
         # Reward the agent for getting closer to the goal.
-        progress_reward = (previous_distance - distance) * 10
+        progress_reward = (self.previous_distance - distance) * 10
         self.previous_distance = distance
 
         # Calculate the reward

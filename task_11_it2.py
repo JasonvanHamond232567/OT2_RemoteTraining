@@ -22,7 +22,7 @@ import os
 os.environ['WANDB_API_KEY'] = 'b5568f289e67777846d0dd9aa888f0d1701b32c1'
 # Initiate the remote task.
 task = Task.init(project_name="Mentor Group K/Group 1/JasonvanHamond",
-                    task_name="JasonvanHamond_reward_iteration1")
+                    task_name="JasonvanHamond_reward_iteration2")
 
 
 # Setting docker image
