@@ -61,7 +61,7 @@ class OT2Env(gym.Env):
         # set the actions
         action = np.append(np.array(action, dtype=np.float32), 0)
         # Call the step function
-        self.sim.run([action])
+        observation = self.sim.run([action])
         pipette_position = self.sim.get_pipette_position(self.sim.robotIds[0])
         #Calculate the distance between the agent and goal
         distance = np.linalg.norm(pipette_position - self.goal_position)
