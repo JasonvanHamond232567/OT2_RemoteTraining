@@ -9,7 +9,7 @@ from wandb.integration.sb3 import WandbCallback
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import EvalCallback, CallbackList
 from stable_baselines3.common.env_checker import check_env
-from ot2_gym_wrapper_baseline import OT2Env
+from ot2_gym_wrapper_it5 import OT2Env
 import gymnasium as gym
 import argparse
 from clearml import Task
@@ -49,7 +49,7 @@ parser.add_argument("--n_steps", type=int, default=2048)
 parser.add_argument("--n_epochs", type=int, default=10)
 parser.add_argument("--gamma", type=float, default=0.98)
 parser.add_argument("--policy", type=str, default="MlpPolicy")
-parser.add_argument("--clip_range", type=float, default=0.3)
+parser.add_argument("--clip_range", type=float, default=0.1)
 parser.add_argument("--value_coefficient", type=float, default=0.5)
 args = parser.parse_args()
 
