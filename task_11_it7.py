@@ -1,5 +1,5 @@
 # ----------------------------------------------------------
-## Year 2 Block B DataLab Task 11: Reinforcement Learning Iteration 8: Reward It4 ##
+## Year 2 Block B DataLab Task 11: Reinforcement Learning Iteration 7: Clip Range It4 ##
 # Name: Jason van Hamond
 # Student Number: 232567
 # ----------------------------------------------------------
@@ -9,7 +9,7 @@ from wandb.integration.sb3 import WandbCallback
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import EvalCallback, CallbackList
 from stable_baselines3.common.env_checker import check_env
-from ot2_gym_wrapper_it8 import OT2Env
+from ot2_gym_wrapper_baseline import OT2Env
 import gymnasium as gym
 import argparse
 from clearml import Task
@@ -22,7 +22,7 @@ import os
 os.environ['WANDB_API_KEY'] = 'b5568f289e67777846d0dd9aa888f0d1701b32c1'
 # Initiate the remote task.
 task = Task.init(project_name="Mentor Group K/Group 1/JasonvanHamond",
-                    task_name="JasonvanHamond_reward_iteration8")
+                    task_name="JasonvanHamond_clip_range_iteration2")
 
 
 # Setting docker image

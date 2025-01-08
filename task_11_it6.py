@@ -1,5 +1,5 @@
 # ----------------------------------------------------------
-## Year 2 Block B DataLab Task 11: Reinforcement Learning Iteration 8: Reward It4 ##
+## Year 2 Block B DataLab Task 11: Reinforcement Learning Iteration 6: Clip Range It3 ##
 # Name: Jason van Hamond
 # Student Number: 232567
 # ----------------------------------------------------------
@@ -9,7 +9,7 @@ from wandb.integration.sb3 import WandbCallback
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import EvalCallback, CallbackList
 from stable_baselines3.common.env_checker import check_env
-from ot2_gym_wrapper_it8 import OT2Env
+from ot2_gym_wrapper_baseline import OT2Env
 import gymnasium as gym
 import argparse
 from clearml import Task
@@ -22,7 +22,7 @@ import os
 os.environ['WANDB_API_KEY'] = 'b5568f289e67777846d0dd9aa888f0d1701b32c1'
 # Initiate the remote task.
 task = Task.init(project_name="Mentor Group K/Group 1/JasonvanHamond",
-                    task_name="JasonvanHamond_reward_iteration8")
+                    task_name="JasonvanHamond_clip_range_iteration2")
 
 
 # Setting docker image
@@ -49,7 +49,7 @@ parser.add_argument("--n_steps", type=int, default=2048)
 parser.add_argument("--n_epochs", type=int, default=10)
 parser.add_argument("--gamma", type=float, default=0.98)
 parser.add_argument("--policy", type=str, default="MlpPolicy")
-parser.add_argument("--clip_range", type=float, default=0.15)
+parser.add_argument("--clip_range", type=float, default=0.05)
 parser.add_argument("--value_coefficient", type=float, default=0.5)
 args = parser.parse_args()
 

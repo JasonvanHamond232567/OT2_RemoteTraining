@@ -1,7 +1,7 @@
 # ----------------------------------------------------------
-## Year 2 Block B DataLab Task 11: Reinforcement Learning Iteration 8: Reward It4 ##
-# Name: Jason van Hamond
-# Student Number: 232567
+## Year 2 Block B DataLab Task 11: Reinforcement Learning Group Iteration 1 ##
+# Names: Alexi Kehayias, Daan Quaadvlied, Michon Goddijn, Jason van Hamond
+# Student Numbers: 232230, 231146, 231849, 232567
 # ----------------------------------------------------------
 
 # Import packages
@@ -9,7 +9,7 @@ from wandb.integration.sb3 import WandbCallback
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import EvalCallback, CallbackList
 from stable_baselines3.common.env_checker import check_env
-from ot2_gym_wrapper_it8 import OT2Env
+from ot2_gym_wrapper import OT2Env
 import gymnasium as gym
 import argparse
 from clearml import Task
@@ -21,8 +21,8 @@ import os
 # Load the API key for wandb
 os.environ['WANDB_API_KEY'] = 'b5568f289e67777846d0dd9aa888f0d1701b32c1'
 # Initiate the remote task.
-task = Task.init(project_name="Mentor Group K/Group 1/JasonvanHamond",
-                    task_name="JasonvanHamond_reward_iteration8")
+task = Task.init(project_name="Mentor Group K/Group 1",
+                    task_name="Group1_Iteration1")
 
 
 # Setting docker image
@@ -34,7 +34,7 @@ task.execute_remotely(queue_name="default")
 env = OT2Env()
 
 # Initialate wandb
-run = wandb.init(project="task11",sync_tensorboard=True)
+run = wandb.init(project="task11_group",sync_tensorboard=True)
 save_path = f"models/{run.id}"
 os.makedirs(save_path, exist_ok=True)
 
@@ -44,12 +44,12 @@ timesteps = 5000000
 parser = argparse.ArgumentParser()
 # Set the default parameters.
 parser.add_argument("--learning_rate", type=float, default=0.0001)
-parser.add_argument("--batch_size", type=int, default=32)
+parser.add_argument("--batch_size", type=int, default=64)
 parser.add_argument("--n_steps", type=int, default=2048)
-parser.add_argument("--n_epochs", type=int, default=10)
-parser.add_argument("--gamma", type=float, default=0.98)
+parser.add_argument("--n_epochs", type=int, default=50)
+parser.add_argument("--gamma", type=float, default=1)
 parser.add_argument("--policy", type=str, default="MlpPolicy")
-parser.add_argument("--clip_range", type=float, default=0.15)
+parser.add_argument("--clip_range", type=float, default=0.1)
 parser.add_argument("--value_coefficient", type=float, default=0.5)
 args = parser.parse_args()
 
