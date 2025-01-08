@@ -18,7 +18,7 @@ import typing_extensions as TypeIs
 import tensorflow
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1" 
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1" 
 
 # Load the API key for wandb
 os.environ['WANDB_API_KEY'] = 'b5568f289e67777846d0dd9aa888f0d1701b32c1'
