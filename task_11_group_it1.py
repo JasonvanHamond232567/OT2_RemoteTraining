@@ -30,7 +30,7 @@ task = Task.init(project_name="Mentor Group K/Group 1",
 # Setting docker image
 task.set_base_docker('deanis/2023y2b-rl:latest')
 # Setting task to run remotely
-task.execute_remotely(queue_name="default")
+task.execute_remotely(queue_name="server2")
 
 #Define the model
 env = OT2Env()
